@@ -1,0 +1,60 @@
+---
+title: "Devoir"
+author: "Jeanne MEDENOU"
+date: '2024-12-18'
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+
+dossier<-list.files(path ="C:/Users/jeann/Downloads/exam data/exam_data/" )
+dossier<-data_frame(dossier)
+
+#la variable dossier contient le nom de tous les fichiers du document
+
+#on va ajouter à chaque nom du dossier le reste du chemin pour pouvoir le lire après
+
+
+chemin_complet<-dossier %>% 
+  mutate(chemin=paste0("C:/Users/jeann/Downloads/exam data/exam_data/",dossier))
+
+
+données<-chemin_complet %>% 
+  rowwise() %>% 
+  do(.,read.csv(.$chemin))
+
+données$date<-as.Date(données$date)
+
+y<-as.Date("2020-01-01")
+z<-as.Date("2022-12-31")
+période<-c(seq(y,z,by=1))
+length(période)
+
+
+ #le paramètre y est la date de départ
+  #z est la date de fin(la période sur laquelle on veut observer les données)
+
+
+
+données_recherchées<-function(x,p){
+  for(i in 1:length(p)){
+    d<-x %>% 
+  select(x,all_of(p[i]))
+   return(d) 
+  }
+}
+  
+
+  
+  
+  
+
+
+données %>% 
+  ggplot(.,aes(x=an,y=nb_de_ventes,color=produit))+geom_bar(stat="identity")
+
+
+```
+
