@@ -385,28 +385,38 @@ dossier&lt;-data_frame(dossier)</code></pre>
 ## generated.</code></pre>
 <pre class="r"><code>#la variable dossier contient le nom de tous les fichiers du document
 
-#on va ajouter à chaque nom du dossier le reste du chemin pour pouvoir le lire après
+#on va maintenant ajouter à chaque nom du dossier le reste du chemin pour pouvoir le lire après.
+
+
+#grace à la fonction mutate du pipe tidyverse,on crée une nouvelle colonne qui contient la colonne des noms de fichiers concaténées avec le reste du chemin du fichier
 
 
 chemin_complet&lt;-dossier %&gt;% 
   mutate(chemin=paste0(&quot;C:/Users/jeann/Downloads/exam data/exam_data/&quot;,dossier))
 
 
+#
+
+
+#on applique au chemin ainsi obtenu, la combinaison des fonctions rowwise et do pour lire les données de tous les fichiers du dossier
+
 données&lt;-chemin_complet %&gt;% 
   rowwise() %&gt;% 
   do(.,read.csv(.$chemin))
 
+
+#On obtient une base contenant toutes les données depuis la date de début jusqu&#39;à la fin
+
+
+#L&#39;objectif maintenant, c&#39;est de créer une fonction qui prend en paramètre la base brute que nous avons après les manipulations ci-dessus et une période de date précisée et voulue
+
+#on nettoie au préalable la base en changeant correctement le type des variables de la base
+
+#Avec la bibliothèque du lubridate, on pourra faire les manipulations sur la date qui est un paramètre important de la fonction
+
 données$date&lt;-as.Date(données$date)
 
-y&lt;-as.Date(&quot;2020-01-01&quot;)
-z&lt;-as.Date(&quot;2022-12-31&quot;)
-période&lt;-c(seq(y,z,by=1))
-length(période)</code></pre>
-<pre><code>## [1] 1096</code></pre>
-<pre class="r"><code> #le paramètre y est la date de départ
-  #z est la date de fin(la période sur laquelle on veut observer les données)
-
-
+#Le but de la fonction consiste à filtrer les données de la base pour ne récupérer que celles de la période voulue
 
 données_recherchées&lt;-function(x,p){
   for(i in 1:length(p)){
@@ -415,12 +425,27 @@ données_recherchées&lt;-function(x,p){
    return(d) 
   }
 }
-  
+
+
+#Exemple  
+#y&lt;-as.Date(&quot;2020-01-01&quot;)
+#z&lt;-as.Date(&quot;2022-12-31&quot;)
+
+#période&lt;-c(seq(y,z,by=1))
+
+#données_recherchées(données,période)
+
+ #le paramètre y est la date de départ
+  #z est la date de fin(la période sur laquelle on veut observer les données)
 
   
   
   
 
+#2Représentations graphiques
+
+
+#Pour une visualisation simple, je propose d&#39;observer l&#39;évolution du nombre de ventes par année
 
 données %&gt;% 
   ggplot(.,aes(x=an,y=nb_de_ventes,color=produit))+geom_bar(stat=&quot;identity&quot;)</code></pre>

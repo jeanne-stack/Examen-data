@@ -14,29 +14,38 @@ dossier<-data_frame(dossier)
 
 #la variable dossier contient le nom de tous les fichiers du document
 
-#on va ajouter à chaque nom du dossier le reste du chemin pour pouvoir le lire après
+#on va maintenant ajouter à chaque nom du dossier le reste du chemin pour pouvoir le lire après.
+
+
+#grace à la fonction mutate du pipe tidyverse,on crée une nouvelle colonne qui contient la colonne des noms de fichiers concaténées avec le reste du chemin du fichier
 
 
 chemin_complet<-dossier %>% 
   mutate(chemin=paste0("C:/Users/jeann/Downloads/exam data/exam_data/",dossier))
 
 
+#
+
+
+#on applique au chemin ainsi obtenu, la combinaison des fonctions rowwise et do pour lire les données de tous les fichiers du dossier
+
 données<-chemin_complet %>% 
   rowwise() %>% 
   do(.,read.csv(.$chemin))
 
+
+#On obtient une base contenant toutes les données depuis la date de début jusqu'à la fin
+
+
+#L'objectif maintenant, c'est de créer une fonction qui prend en paramètre la base brute que nous avons après les manipulations ci-dessus et une période de date précisée et voulue
+
+#on nettoie au préalable la base en changeant correctement le type des variables de la base
+
+#Avec la bibliothèque du lubridate, on pourra faire les manipulations sur la date qui est un paramètre important de la fonction
+
 données$date<-as.Date(données$date)
 
-y<-as.Date("2020-01-01")
-z<-as.Date("2022-12-31")
-période<-c(seq(y,z,by=1))
-length(période)
-
-
- #le paramètre y est la date de départ
-  #z est la date de fin(la période sur laquelle on veut observer les données)
-
-
+#Le but de la fonction consiste à filtrer les données de la base pour ne récupérer que celles de la période voulue
 
 données_recherchées<-function(x,p){
   for(i in 1:length(p)){
@@ -45,15 +54,31 @@ données_recherchées<-function(x,p){
    return(d) 
   }
 }
-  
+
+
+#Exemple  
+#y<-as.Date("2020-01-01")
+#z<-as.Date("2022-12-31")
+
+#période<-c(seq(y,z,by=1))
+
+#données_recherchées(données,période)
+
+ #le paramètre y est la date de départ
+  #z est la date de fin(la période sur laquelle on veut observer les données)
 
   
   
   
 
+#2Représentations graphiques
+
+
+#Pour une visualisation simple, je propose d'observer l'évolution du nombre de ventes par année
 
 données %>% 
   ggplot(.,aes(x=an,y=nb_de_ventes,color=produit))+geom_bar(stat="identity")
+
 
 
 ```
